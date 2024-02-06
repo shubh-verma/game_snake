@@ -67,6 +67,14 @@ function loop() {
     return;
   }
 
+  if (gemEaten) {
+    allowanceCounter++;
+    if (allowanceCounter >= 50) {
+      gemEaten = false;
+      allowanceCounter = 0;
+    }
+  }
+
   animationFrame = requestAnimationFrame(loop);
 
   if (++speed < 100) {
