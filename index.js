@@ -8,7 +8,7 @@ let gameRunning = false;
 let gamePaused = false;
 
 let grid = 16;
-let count = 0;
+let speed = 0;
 let score = 0;
 let gemEaten = false;
 let allowanceCounter = 0;
@@ -43,6 +43,47 @@ gameOverScreen
     startGame();
   });
 
+function loop() {
+  if (!gameRunning || gamePaused) {
+    return;
+  }
+
+  animationFrame = requestAnimationFrame(loop);
+
+  if (++speed < 100) {
+    return;
+  }
+  speed = 95;
+  context.clearRect(0, 0, canvas.clientWidth, canvas.height);
+  snake.x += snake.dx;
+  snake.y += snake.dy;
+
+  snake.cells.unshift({ x: snake.x, y: snake.y });
+  if (snake.cells.length > snake.maxCells) {
+    snake.cells.pop();
+  }
+
+  context.fillStyle = "#fff";
+  context.fillRect(gem.x, gem.y, grid - 1, grid - 1);
+  context.shadowColor = "rgba(0,0,0,0.5)";
+  context.shadowBlur = 5;
+  context.shadowOffsetX = 2;
+  context.shadowOffsetY = 2;
+
+  snake.cells.forEach(function (cell, index) {
+    context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+    if (cell.x === gem.x && cell.y === gem.y) {
+      snake.maxCells++;
+      score++;
+      scoreDisplay.textContent = score;
+      eatingSound.play();
+      gem.x = getRandomInt(0, 25) * grid;
+      gem.y = getRandomInt(0, 25) * grid;
+      gemEaten = true;
+    }
+  });
+}
+
 function startGame() {
   if (gameRunning) {
     return;
@@ -65,17 +106,4 @@ function startGame() {
     cancelAnimationFrame(animationFrame);
   }
   animationFrame = requestAnimationFrame(loop);
-}
-
-function loop() {
-  if (!gameRunning || gamePaused) {
-    return;
-  }
-
-  context.fillStyle = "#fff";
-  context.fillRect(gem.x, gem.y, grid - 1, grid - 1);
-  context.shadowColor = "rgba(0,0,0,0.5)";
-  context.shadowBlur = 5;
-  context.shadowOffsetX = 2;
-  context.shadowOffsetY = 2;
 }
