@@ -111,6 +111,12 @@ function loop() {
       gem.y = getRandomInt(0, 25) * grid;
       gemEaten = true;
     }
+
+    for (let i = index + 1; i < snake.cells.length; i++) {
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        endGame();
+      }
+    }
   });
 }
 
@@ -136,4 +142,19 @@ function startGame() {
     cancelAnimationFrame(animationFrame);
   }
   animationFrame = requestAnimationFrame(loop);
+}
+
+function endGame() {
+  gameRunning = false;
+  gamePaused = true;
+  gameOverScreen.style.display = "block";
+  document.querySelector(".game-over .score-display").textContent = score;
+
+  collisionSound.play();
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  snake.clearRect(0, 0, canvas.width, canvas.height);
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame);
+  }
 }
